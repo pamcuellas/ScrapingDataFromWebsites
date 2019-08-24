@@ -119,12 +119,20 @@ def scrape():
     tables = pd.read_html(url)
     df = tables[1]
     df.rename(columns={0:"Description",1:"Value"}, inplace=True)
-    df.set_index("Description", inplace=True)
 
     # In[9]:
 
     # Use Pandas to convert the data to a HTML table string.
-    html_table = df.to_html(escape=False, justify="left", classes="table table-striped table-bordered table-sm")
+    html_temp = df.to_html(index=False, escape=False, justify="left", classes="table table-striped table-bordered table-sm")
+
+    # Change the first column from td to th.
+    html_table = ""
+    for row in html_temp.split("<tr>"): 
+        row = row.replace("<td>","<th>",1)
+        row = row.replace("</td>","</th>",1)
+        html_table = html_table + "<tr>" + row
+    html_table = html_table.replace("<tr>","",1)
+
     json_data["html_table"] = html_table
 
     # ### Mars Hemispheres
